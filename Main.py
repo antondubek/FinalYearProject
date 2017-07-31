@@ -85,4 +85,4 @@ def doorOpen():
 ####
 
 # When main button is pressed call LCD Function
-GPIO.add_event_detect(24, GPIO.RISING, callback=welcomeFunc)
+GPIO.add_event_detect(24, GPIO.RISING, callback=welcomeFunc, bouncetime=5000)
