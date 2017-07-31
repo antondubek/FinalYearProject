@@ -43,36 +43,40 @@ def FourDigitCodeCheck():
     while True:
 
         """ If attemptCounter < attemptsAllowed """
+        if (attemptCounter < attemptsAllowed):
+            # Loop to get a pressed digit
+            digit = None
+            while digit == None:
+                digit = kp.getKey()
 
-        # Loop to get a pressed digit
-        digit = None
-        while digit == None:
-            digit = kp.getKey()
+                # Print the result
+            print "Digit Entered:       %s"%digit
+            attempt = (attempt[1:] + str(digit))
+            print "Attempt value:       %s"%attempt
 
-            # Print the result
-        print "Digit Entered:       %s"%digit
-        attempt = (attempt[1:] + str(digit))
-        print "Attempt value:       %s"%attempt
+            # Check for passcode match
+            if (attempt == passcode):
+                print "Your code was correct, goodbye."
+                return True
 
-        # Check for passcode match
-        if (attempt == passcode):
-            print "Your code was correct, goodbye."
-            return True
+            else:
+                counter += 1
+                print "Entered digit count: %s"%counter
+
+                if (counter >= 4):
+                    print "Incorrect code!"
+                    sleep(3)
+                    print "Try Again"
+                    sleep(1)
+                    counter = 0
+                    attemptCounter += 1
+
+
+            sleep(0.5)
 
         else:
-            counter += 1
-            print "Entered digit count: %s"%counter
-
-            if (counter >= 4):
-                print "Incorrect code!"
-                sleep(3)
-                print "Try Again"
-                sleep(1)
-                counter = 0
-                attemptCounter += 1
-
-
-        sleep(0.5)
+            print ("You have exceeded the number of attempts")
+            return False
 
 
 ####
