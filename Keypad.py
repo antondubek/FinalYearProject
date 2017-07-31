@@ -32,26 +32,56 @@ def digit():
         r = kp.getKey()
     return r
 
-def getFourDigitCode():
-    # Getting digit 1, printing it, then sleep to allow the next digit press.
-    d1 = digit()
-    print d1
-    sleep(1)
+def FourDigitCodeCheck():
 
-    d2 = digit()
-    print d2
-    sleep(1)
+    # Number of guesses / retries allowed
+    guessesAllowed = 3
 
-    d3 = digit()
-    print d3
-    sleep(1)
+    # Door code to allow access.
+    code = "1234"
 
-    d4 = digit()
-    print d4
+    for attempt in range(attemptsAllowed):
+        print "Please enter a 4 digit code: "
 
-    # printing out the assembled 4 digit code.
-    # print "You Entered %s%s%s%s "%(d1,d2,d3,d4)
-    return ("%s%s%s%s") %(d1,d2,d3,d4)
+        # Getting digit 1, printing it, then sleep to allow the next digit press.
+        d1 = digit()
+        print d1
+        sleep(1)
+
+        d2 = digit()
+        print d2
+        sleep(1)
+
+        d3 = digit()
+        print d3
+        sleep(1)
+
+        d4 = digit()
+        print d4
+
+        # Creates guess as a string
+        guess = ("%s%s%s%s") %(d1,d2,d3,d4)
+
+        # Debug print
+        print(guess)
+
+        # Returns true if guess correct
+        if guess == code:
+            print ("Code Accepted")
+            return True
+
+        else:
+            print ("Incorrect code please try again")
+
+    # If user incorrect after all attempts then returns false
+    if guess != code:
+        print ("Sorry you have reached the maximum number of attempts!")
+        return False
+
+
+        # printing out the assembled 4 digit code.
+        # print "You Entered %s%s%s%s "%(d1,d2,d3,d4)
+        # return ("%s%s%s%s") %(d1,d2,d3,d4)
 
 
 ####
