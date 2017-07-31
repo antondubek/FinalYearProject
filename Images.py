@@ -10,6 +10,7 @@ uploading images to a location where a web application can find them.
 ####
 import time
 import os
+from datetime import datetime
 
 ####
 ## Initialisation of Pins
@@ -19,8 +20,10 @@ import os
 ## Functions
 ####
 def takePicture():
+    now = datetime.now()
+    time = now.strftime(“%Y-%m-%d-%H-%M”)
     print ("Taking Picture")
-    os.system("cd /home/pi/Documents/TestProjects/WebcamPics | fswebcam image.jpg")
+    os.system("cd /home/pi/Documents/TestProjects/WebcamPics | fswebcam " + time +".jpg")
 
 ####
 ## Main
