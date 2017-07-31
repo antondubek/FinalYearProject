@@ -45,27 +45,34 @@ def choiceProcessor(choiceNo):
     if choiceNo == 1:
         print ("Alerting Someone Now..")
         print ("Please Wait...")
-        #Call alert file
+        #Call alert function
 
     elif choiceNo == 2:
         print ("Initialising Fingerprint Function...")
         print ("Please Wait...")
-        #Call Fingerprint file
+        #Call Fingerprint function
 
     elif choiceNo == 3:
         print ("Initialising Keyapad Function...")
         print ("Please Wait...")
-        #Call keypad file
+        #Call keypad function
 
     elif choiceNo == 4:
         print ("Initialising RFID Function...")
         print ("Please Wait...")
-        #Call RFID file
+        #Call RFID function
 
     elif choiceNo == 5:
         print ("Initialising Facial Recognition Function...")
         print ("Please Wait...")
-        #Call facial Recognition file
+        #Call facial Recognition function
+
+def keyapdFunc():
+    print "Please enter a 4 digit code: "
+    code = getFourDigitCode()
+
+
+
 
 ####
 ## Main
