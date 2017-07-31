@@ -68,8 +68,11 @@ def choiceProcessor(choiceNo):
         #Call facial Recognition function
 
 def keyapdFunc():
-    print "Please enter a 4 digit code: "
-    code = getFourDigitCode()
+    if FourDigitCodeCheck() == True:
+        # Door open function
+
+    else:
+        welcomeFunc()
 
 
 
