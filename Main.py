@@ -17,7 +17,7 @@ GPIO.setmode(GPIO.BCM)
 
 # Button
 ButtonPin = 24
-GPIO.setup(ButtonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(ButtonPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 # PIR
 
