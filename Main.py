@@ -16,7 +16,8 @@ import os
 GPIO.setmode(GPIO.BCM)
 
 # Button
-GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+ButtonPin = 24
+GPIO.setup(ButtonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # PIR
 
@@ -85,4 +86,4 @@ def doorOpen():
 ####
 
 # When main button is pressed call LCD Function
-GPIO.add_event_detect(24, GPIO.RISING, callback=welcomeFunc, bouncetime=5000)
+GPIO.add_event_detect(ButtonPin, GPIO.RISING, callback=welcomeFunc, bouncetime=5000)
