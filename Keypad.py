@@ -6,7 +6,9 @@ File: Keypad
 ####
 ## Import libraries
 ####
-import keypadLib
+import RPi_GPIO
+from time import sleep
+from sys import exit
 
 ####
 ## Initialisation of Pins
@@ -25,63 +27,52 @@ kp = RPi_GPIO.keypad(columnCount = 4)
 ####
 ## Functions
 ####
-def digit():
-    # Loop while waiting for a keypress
-    r = None
-    while r == None:
-        r = kp.getKey()
-    return r
 
 def FourDigitCodeCheck():
 
-    # Number of guesses / retries allowed
-    guessesAllowed = 3
+    # Setup variables
+    attempt = "0000"
+    passcode = "1234"
+    counter = 0
+    attemptCounter = 0
+    attemptsAllowed = 3
 
-    # Door code to allow access.
-    code = "1234"
+    print ("Enter 4 Digit Pin Code")
 
-    for attempt in range(attemptsAllowed):
-        print "Please enter a 4 digit code: "
+    # Loop while waiting for a keypress
+    while True:
 
-        # Getting digit 1, printing it, then sleep to allow the next digit press.
-        d1 = digit()
-        print d1
-        sleep(1)
+        """ If attemptCounter < attemptsAllowed """
 
-        d2 = digit()
-        print d2
-        sleep(1)
+        # Loop to get a pressed digit
+        digit = None
+        while digit == None:
+            digit = kp.getKey()
 
-        d3 = digit()
-        print d3
-        sleep(1)
+            # Print the result
+        print "Digit Entered:       %s"%digit
+        attempt = (attempt[1:] + str(digit))
+        print "Attempt value:       %s"%attempt
 
-        d4 = digit()
-        print d4
-
-        # Creates guess as a string
-        guess = ("%s%s%s%s") %(d1,d2,d3,d4)
-
-        # Debug print
-        print(guess)
-
-        # Returns true if guess correct
-        if guess == code:
-            print ("Code Accepted")
+        # Check for passcode match
+        if (attempt == passcode):
+            print "Your code was correct, goodbye."
             return True
 
         else:
-            print ("Incorrect code please try again")
+            counter += 1
+            print "Entered digit count: %s"%counter
 
-    # If user incorrect after all attempts then returns false
-    if guess != code:
-        print ("Sorry you have reached the maximum number of attempts!")
-        return False
+            if (counter >= 4):
+                print "Incorrect code!"
+                sleep(3)
+                print "Try Again"
+                sleep(1)
+                counter = 0
+                attemptCounter += 1
 
 
-        # printing out the assembled 4 digit code.
-        # print "You Entered %s%s%s%s "%(d1,d2,d3,d4)
-        # return ("%s%s%s%s") %(d1,d2,d3,d4)
+        sleep(0.5)
 
 
 ####

@@ -7,8 +7,9 @@ File: Main
 ## Import libraries
 ####
 import RPi.GPIO as GPIO
-import time
+from time import sleep
 import os
+from Keypad import FourDigitCodeCheck
 
 ####
 ## Initialisation of Pins
@@ -16,8 +17,8 @@ import os
 GPIO.setmode(GPIO.BCM)
 
 # Button
-ButtonPin = 24
-GPIO.setup(ButtonPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # PIR
 
@@ -38,7 +39,7 @@ def welcomeFunc():
     print ("3. Keypad")
     print ("4. RFID")
     print ("5. Facial Recognition")
-    choice = raw_input("Please input number of choice: ")
+    choice = int(raw_input("Please input number of choice: "))
     choiceProcessor(choice)
 
 # Takes choice and executes relevant function.
@@ -57,6 +58,7 @@ def choiceProcessor(choiceNo):
         print ("Initialising Keyapad Function...")
         print ("Please Wait...")
         #Call keypad function
+        FourDigitCodeCheck()
 
     elif choiceNo == 4:
         print ("Initialising RFID Function...")
@@ -85,13 +87,11 @@ def doorOpen():
 ## Main
 ####
 
-try:
-    # When main button is pressed call LCD Function
-    GPIO.add_event_detect(ButtonPin, GPIO.RISING, callback=welcomeFunc, bouncetime=5000)
+while True:
+    print ("Please Press Door Bell to Begin")
+    if GPIO.wait_for_edge(23, GPIO.FALLING):
+        welcomeFunc()
 
-
-except KeyboardInterrupt:
-    print ("Thank You & Good Bye")
-    GPIO.cleanup()       # clean up GPIO on CTRL+C exit
+    # clean up GPIO on CTRL+C exit
 
 GPIO.cleanup()           # clean up GPIO on normal exit
