@@ -14,7 +14,16 @@ from Keypad import FourDigitCodeCheck
 ####
 ## Initialisation of Pins
 ####
+
 GPIO.setmode(GPIO.BCM)
+
+# LED's
+RedLED_pin = 25
+GreenLED_pin = 18
+GPIO.setup(GreenLED_pin,GPIO.OUT)
+GPIO.setup(RedLED_pin,GPIO.OUT)
+GPIO.output(RedLED_pin,GPIO.LOW)
+GPIO.output(GreenLED_pin,GPIO.LOW)
 
 # Button
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -58,7 +67,9 @@ def choiceProcessor(choiceNo):
         print ("Initialising Keyapad Function...")
         print ("Please Wait...")
         #Call keypad function
-        FourDigitCodeCheck()
+        keypadOutput = FourDigitCodeCheck()
+        if keypadOutput == True:
+            doorOpen()
 
     elif choiceNo == 4:
         print ("Initialising RFID Function...")
@@ -70,28 +81,29 @@ def choiceProcessor(choiceNo):
         print ("Please Wait...")
         #Call facial Recognition function
 
-def keyapdFunc():
-    if FourDigitCodeCheck() == True:
-        doorOpen()
-
-    else:
-        welcomeFunc()
-
+# Function to open / release door. LED for bug fixing
 def doorOpen():
     print ("Door Open")
+    GreenLED_on()
 
+def GreenLED_on():
+    GPIO.output(GreenLED_pin,GPIO.HIGH)
+    sleep(3)
+    GPIO.output(GreenLED_pin,GPIO.LOW)
 
+def RedLED_on(pin):
+    print ("Red LED On")
+    GPIO.output(pin,GPIO.HIGH)
+    sleep(3)
+    GPIO.output(pin,GPIO.LOW)
 
 
 ####
 ## Main
 ####
 
+# Polls for when button is pressed and calls welcome function.
 while True:
     print ("Please Press Door Bell to Begin")
     if GPIO.wait_for_edge(23, GPIO.FALLING):
         welcomeFunc()
-
-    # clean up GPIO on CTRL+C exit
-
-GPIO.cleanup()           # clean up GPIO on normal exit

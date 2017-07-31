@@ -6,7 +6,7 @@ File: Keypad
 ####
 ## Import libraries
 ####
-import RPi_GPIO
+import keypadLib
 from time import sleep
 from sys import exit
 
@@ -22,7 +22,7 @@ Columns: 4 17 27 26
 """
 
 # Creates keyboard kp.
-kp = RPi_GPIO.keypad(columnCount = 4)
+kp = keypadLib.keypad(columnCount = 4)
 
 ####
 ## Functions
@@ -65,7 +65,7 @@ def FourDigitCodeCheck():
 
                 if (counter >= 4):
                     print "Incorrect code!"
-                    sleep(3)
+                    sleep(1)
                     print "Try Again"
                     sleep(1)
                     counter = 0
