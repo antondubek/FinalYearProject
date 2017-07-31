@@ -69,10 +69,13 @@ def choiceProcessor(choiceNo):
 
 def keyapdFunc():
     if FourDigitCodeCheck() == True:
-        # Door open function
+        doorOpen()
 
     else:
         welcomeFunc()
+
+def doorOpen():
+    print ("Door Open")
 
 
 
