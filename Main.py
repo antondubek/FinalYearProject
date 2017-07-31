@@ -85,5 +85,13 @@ def doorOpen():
 ## Main
 ####
 
-# When main button is pressed call LCD Function
-GPIO.add_event_detect(ButtonPin, GPIO.RISING, callback=welcomeFunc, bouncetime=5000)
+try:
+    # When main button is pressed call LCD Function
+    GPIO.add_event_detect(ButtonPin, GPIO.RISING, callback=welcomeFunc, bouncetime=5000)
+
+
+except KeyboardInterrupt:
+    print ("Thank You & Good Bye")
+    GPIO.cleanup()       # clean up GPIO on CTRL+C exit
+
+GPIO.cleanup()           # clean up GPIO on normal exit
