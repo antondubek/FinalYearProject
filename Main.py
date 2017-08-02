@@ -54,6 +54,7 @@ def welcomeFunc():
         # Option 3: Keypad
         if GPIO.wait_for_edge(24, GPIO.FALLING):
             choiceProcessor(3)
+            return
 
         #elif GPIO.wait_for_edge(24, GPIO.FALLING):
         #    choiceProcessor(3)
@@ -80,6 +81,7 @@ def choiceProcessor(choiceNo):
         keypadOutput = FourDigitCodeCheck()
         if keypadOutput == True:
             doorOpen()
+            return
 
     elif choiceNo == 4:
         print ("Initialising RFID Function...")
@@ -93,13 +95,19 @@ def choiceProcessor(choiceNo):
 
 # Function to open / release door. LED for bug fixing
 def doorOpen():
-    print ("Door Open")
-    GreenLED_on()
+    print ("Door Open : Please Enter")
+    GreenLED("ON")
+    sleep(5)
+    GreenLED("OFF")
+    return
 
-def GreenLED_on():
-    GPIO.output(GreenLED_pin,GPIO.HIGH)
-    sleep(3)
-    GPIO.output(GreenLED_pin,GPIO.LOW)
+def GreenLED(status):
+    if status == "ON":
+        GPIO.output(GreenLED_pin,GPIO.HIGH)
+    elif status == "OFF":
+        GPIO.output(GreenLED_pin,GPIO.LOW)
+    else:
+        print ("DEBUG: Please declare LED Green status ON/OFF")
 
 def RedLED_on(pin):
     print ("Red LED On")
