@@ -48,8 +48,18 @@ def welcomeFunc():
     print ("3. Keypad")
     print ("4. RFID")
     print ("5. Facial Recognition")
-    choice = int(raw_input("Please input number of choice: "))
-    choiceProcessor(choice)
+
+    while True:
+
+        # Option 3: Keypad
+        if GPIO.wait_for_edge(24, GPIO.FALLING):
+            choiceProcessor(3)
+
+        #elif GPIO.wait_for_edge(24, GPIO.FALLING):
+        #    choiceProcessor(3)
+
+    #choice = int(raw_input("Please input number of choice: "))
+    #choiceProcessor(choice)
 
 # Takes choice and executes relevant function.
 def choiceProcessor(choiceNo):
