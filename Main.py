@@ -9,7 +9,8 @@ File: Main
 import RPi.GPIO as GPIO
 from time import sleep
 import os
-from Keypad import FourDigitCodeCheck
+from Subclasses.Keypad import FourDigitCodeCheck
+from Subclasses.RFID import checkRFIDTag
 
 ####
 ## Initialisation of Pins
@@ -25,9 +26,13 @@ GPIO.setup(RedLED_pin,GPIO.OUT)
 GPIO.output(RedLED_pin,GPIO.LOW)
 GPIO.output(GreenLED_pin,GPIO.LOW)
 
-# Button
+# Buttons
+# Main Red
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# First Button (L to R)
+GPIO.setup(5, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# Second Button (L to R)
+GPIO.setup(1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # PIR
 
@@ -52,12 +57,14 @@ def welcomeFunc():
     while True:
 
         # Option 3: Keypad
-        if GPIO.wait_for_edge(24, GPIO.FALLING):
+        if GPIO.input(5) == GPIO.LOW:
             choiceProcessor(3)
             return
 
-        #elif GPIO.wait_for_edge(24, GPIO.FALLING):
-        #    choiceProcessor(3)
+        # Option 4: RFID
+        if GPIO.input(1) == GPIO.LOW:
+            choiceProcessor(4)
+            return
 
     #choice = int(raw_input("Please input number of choice: "))
     #choiceProcessor(choice)
@@ -87,6 +94,10 @@ def choiceProcessor(choiceNo):
         print ("Initialising RFID Function...")
         print ("Please Wait...")
         #Call RFID function
+        rfidOutput = checkRFIDTag()
+        if rfidOutput == True:
+            doorOpen()
+            return
 
     elif choiceNo == 5:
         print ("Initialising Facial Recognition Function...")

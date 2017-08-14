@@ -50,23 +50,23 @@ def FourDigitCodeCheck():
                 digit = kp.getKey()
 
                 # Print the result
-            print "Digit Entered:       %s"%digit
+            print ("Digit Entered:       %s"%digit)
             attempt = (attempt[1:] + str(digit))
-            print "Attempt value:       %s"%attempt
+            print ("Attempt value:       %s"%attempt)
 
             # Check for passcode match
             if (attempt == passcode):
-                print "Your code was correct, goodbye."
+                print ("Your code was correct, goodbye.")
                 return True
 
             else:
                 counter += 1
-                print "Entered digit count: %s"%counter
+                print ("Entered digit count: %s"%counter)
 
                 if (counter >= 4):
-                    print "Incorrect code!"
+                    print ("Incorrect code!")
                     sleep(1)
-                    print "Try Again"
+                    print ("Try Again")
                     sleep(1)
                     counter = 0
                     attemptCounter += 1
