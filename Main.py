@@ -49,39 +49,51 @@ def welcomeFunc():
     os.system('clear')
     print ("Please choose an option: ")
     print ("1. Alert Someone")
-    print ("2. Fingerprint")
-    print ("3. Keypad")
-    print ("4. RFID")
-    print ("5. Facial Recognition")
+    print ("2. Keypad")
+    print ("3. RFID")
+
+    options = ["1", "2", "3"]
+    helperX = 0
 
     while True:
 
+        print ("Option: %s" %options[helperX])
+
+        if GPIO.input(1) == GPIO.LOW and helperX != (len(options) - 1):
+            helperX += 1
+
+        if GPIO.input(5) == GPIO.LOW and helperX != 0:
+            helperX -= 1
+
+        if GPIO.input(23) == GPIO.LOW:
+            #print ("You chose %s" %x)
+            choiceProcessor(helperX)
+
+        sleep(0.3)
+
+
         # Option 3: Keypad
-        if GPIO.input(5) == GPIO.LOW:
-            choiceProcessor(3)
-            return
+        #if GPIO.input(5) == GPIO.LOW:
+        #    choiceProcessor(3)
+        #    return
 
         # Option 4: RFID
-        if GPIO.input(1) == GPIO.LOW:
-            choiceProcessor(4)
-            return
+        #if GPIO.input(1) == GPIO.LOW:
+        #    choiceProcessor(4)
+        #    return
 
     #choice = int(raw_input("Please input number of choice: "))
     #choiceProcessor(choice)
 
 # Takes choice and executes relevant function.
 def choiceProcessor(choiceNo):
-    if choiceNo == 1:
+    if choiceNo == 0:
         print ("Alerting Someone Now..")
         print ("Please Wait...")
         #Call alert function
+        return
 
-    elif choiceNo == 2:
-        print ("Initialising Fingerprint Function...")
-        print ("Please Wait...")
-        #Call Fingerprint function
-
-    elif choiceNo == 3:
+    elif choiceNo == 1:
         print ("Initialising Keyapad Function...")
         print ("Please Wait...")
         #Call keypad function
@@ -90,7 +102,7 @@ def choiceProcessor(choiceNo):
             doorOpen()
             return
 
-    elif choiceNo == 4:
+    elif choiceNo == 2:
         print ("Initialising RFID Function...")
         print ("Please Wait...")
         #Call RFID function
@@ -98,11 +110,6 @@ def choiceProcessor(choiceNo):
         if rfidOutput == True:
             doorOpen()
             return
-
-    elif choiceNo == 5:
-        print ("Initialising Facial Recognition Function...")
-        print ("Please Wait...")
-        #Call facial Recognition function
 
 # Function to open / release door. LED for bug fixing
 def doorOpen():
