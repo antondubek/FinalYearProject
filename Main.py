@@ -9,6 +9,7 @@ File: Main
 import RPi.GPIO as GPIO
 from time import sleep
 import os
+import sys
 from Subclasses.Keypad import FourDigitCodeCheck
 from Subclasses.RFID import checkRFIDTag
 
@@ -17,6 +18,7 @@ from Subclasses.RFID import checkRFIDTag
 ####
 
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 
 # LED's
 RedLED_pin = 25
@@ -56,17 +58,24 @@ def welcomeFunc():
     options = ["1", "2", "3"]
     helperX = 0
 
+    sys.stdout.write("Option: %s \r" %options[helperX])
+    sys.stdout.flush()
+
     while True:
 
         # If right button pressed then option increases by 1
         if GPIO.input(1) == GPIO.LOW and helperX != (len(options) - 1):
             helperX += 1
-            print ("Option: %s" %options[helperX])
+            #print "Option: %s " %options[helperX]
+            sys.stdout.write("Option: %s \r" %options[helperX])
+            sys.stdout.flush()
 
         # If right button pressed then option increases by 1
         if GPIO.input(5) == GPIO.LOW and helperX != 0:
             helperX -= 1
-            print ("Option: %s" %options[helperX])
+            #print "Option: %s " %options[helperX]
+            sys.stdout.write("Option: %s \r" %options[helperX])
+            sys.stdout.flush()
 
         # Red button press confirms selection
         if GPIO.input(23) == GPIO.LOW:
@@ -76,7 +85,7 @@ def welcomeFunc():
 
         # Debounce Sleep for Buttons
         sleep(0.2)
-        
+
         # Option 3: Keypad
         #if GPIO.input(5) == GPIO.LOW:
         #    choiceProcessor(3)
@@ -96,6 +105,7 @@ def choiceProcessor(choiceNo):
         print ("Alerting Someone Now..")
         print ("Please Wait...")
         #Call alert function
+        sleep(2)
         return
 
     elif choiceNo == 1:
