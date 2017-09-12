@@ -52,27 +52,31 @@ def welcomeFunc():
     print ("2. Keypad")
     print ("3. RFID")
 
+    # Creates values to be cycled through by user.
     options = ["1", "2", "3"]
     helperX = 0
 
     while True:
 
-        print ("Option: %s" %options[helperX])
-
+        # If right button pressed then option increases by 1
         if GPIO.input(1) == GPIO.LOW and helperX != (len(options) - 1):
             helperX += 1
+            print ("Option: %s" %options[helperX])
 
+        # If right button pressed then option increases by 1
         if GPIO.input(5) == GPIO.LOW and helperX != 0:
             helperX -= 1
+            print ("Option: %s" %options[helperX])
 
+        # Red button press confirms selection
         if GPIO.input(23) == GPIO.LOW:
             #print ("You chose %s" %x)
             choiceProcessor(helperX)
             return
 
-        sleep(0.3)
-
-
+        # Debounce Sleep for Buttons
+        sleep(0.2)
+        
         # Option 3: Keypad
         #if GPIO.input(5) == GPIO.LOW:
         #    choiceProcessor(3)
