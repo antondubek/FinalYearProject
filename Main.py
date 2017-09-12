@@ -68,6 +68,7 @@ def welcomeFunc():
         if GPIO.input(23) == GPIO.LOW:
             #print ("You chose %s" %x)
             choiceProcessor(helperX)
+            return
 
         sleep(0.3)
 
