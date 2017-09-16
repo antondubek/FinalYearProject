@@ -12,6 +12,7 @@ import os
 import sys
 from Subclasses.Keypad import FourDigitCodeCheck
 from Subclasses.RFID import checkRFIDTag
+from Subclasses.Images import takePicture
 
 ####
 ## Initialisation of Pins
@@ -48,6 +49,7 @@ def welcomeFunc():
     os.system('clear')
     print ("Welcome to Smart Doorbell")
     sleep(3)
+    takePicture()
     os.system('clear')
     print ("Please choose an option: ")
     print ("1. Alert Someone")

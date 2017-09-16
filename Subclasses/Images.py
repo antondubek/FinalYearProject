@@ -8,22 +8,31 @@ uploading images to a location where a web application can find them.
 ####
 ## Import libraries
 ####
-import time
-import os
+import picamera
 from datetime import datetime
+from time import sleep
+import os
 
 ####
-## Initialisation of Pins
+## Initialisation
 ####
+
 
 ####
 ## Functions
 ####
 def takePicture():
-    now = datetime.now()
-    time = now.strftime(“%Y-%m-%d-%H-%M”)
-    print ("Taking Picture")
-    os.system("cd /home/pi/Documents/TestProjects/WebcamPics | fswebcam " + time +".jpg")
+    with picamera.PiCamera() as camera:
+        camera.resolution = (1080, 720)
+        now = datetime.now()
+        label = now.strftime("%c")
+        print ("Initialising Camera")
+        camera.start_preview()
+        sleep(1)
+        os.chdir ("/home/pi/DoorbellImages")
+        camera.capture("%s.jpg" %label)
+        print ("Picture Taken")
+        camera.close()
 
 ####
 ## Main
