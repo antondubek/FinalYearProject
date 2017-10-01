@@ -1,0 +1,21 @@
+<InitialMenu>:
+    orientation: 'vertical'
+
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: welcomeMessage
+            text: 'Welcome to Smart Doorbell'
+            font_size: 50
+
+        Button:
+            text: 'Alert Someone'
+            on_release: root.AlertSomeone()
+
+        Button:
+            text: 'Keypad'
+            on_release: root.Keypad()
+
+        Button:
+            text: 'RFID'
+            on_release: root.RFID()

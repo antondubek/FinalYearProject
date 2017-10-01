@@ -14,6 +14,14 @@ from Subclasses.Keypad import FourDigitCodeCheck
 from Subclasses.RFID import checkRFIDTag
 from Subclasses.Images import takePicture
 
+from kivy.app import App
+from kivy.uix.button import Button
+from kivy.uix.scatter import Scatter
+from kivy.uix.label import Label
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.textinput import TextInput
+from kivy.uix.boxlayout import BoxLayout
+
 ####
 ## Initialisation of Pins
 ####
@@ -26,7 +34,7 @@ RedLED_pin = 25
 GreenLED_pin = 18
 GPIO.setup(GreenLED_pin,GPIO.OUT)
 GPIO.setup(RedLED_pin,GPIO.OUT)
-GPIO.output(RedLED_pin,GPIO.LOW)
+GPIO.output(RedLED_pin,GPIO.HIGH)
 GPIO.output(GreenLED_pin,GPIO.LOW)
 
 # Buttons
@@ -44,12 +52,14 @@ GPIO.setup(1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 ## Functions
 ####
 
+
 # Welcome Message & Choice
+"""
 def welcomeFunc():
     os.system('clear')
     print ("Welcome to Smart Doorbell")
     sleep(3)
-    takePicture()
+    #takePicture()
     os.system('clear')
     print ("Please choose an option: ")
     print ("1. Alert Someone")
@@ -62,6 +72,9 @@ def welcomeFunc():
 
     sys.stdout.write("Option: %s \r" %options[helperX])
     sys.stdout.flush()
+
+
+
 
     while True:
 
@@ -101,6 +114,30 @@ def welcomeFunc():
     #choice = int(raw_input("Please input number of choice: "))
     #choiceProcessor(choice)
 
+    """
+
+
+class InitialMenu(BoxLayout):
+    def AlertSomeone(self, *args):
+        print 'Alert'
+
+    def RFID(self, *args):
+        print 'RFID'
+        choiceProcessor(2)
+        Window().close
+        App.get_running_app().stop()
+
+
+    def Keypad(self, *args):
+        print 'Keypad'
+
+class introduction(App):
+    def build(self):
+        self.load_kv('Subclasses/welcomemenu.kv')
+        return InitialMenu()
+
+
+
 # Takes choice and executes relevant function.
 def choiceProcessor(choiceNo):
     if choiceNo == 0:
@@ -138,17 +175,14 @@ def doorOpen():
 
 def GreenLED(status):
     if status == "ON":
+        GPIO.output(RedLED_pin, GPIO.LOW)
         GPIO.output(GreenLED_pin,GPIO.HIGH)
     elif status == "OFF":
         GPIO.output(GreenLED_pin,GPIO.LOW)
+        GPIO.output(RedLED_pin, GPIO.HIGH)
     else:
         print ("DEBUG: Please declare LED Green status ON/OFF")
 
-def RedLED_on(pin):
-    print ("Red LED On")
-    GPIO.output(pin,GPIO.HIGH)
-    sleep(3)
-    GPIO.output(pin,GPIO.LOW)
 
 
 ####
@@ -159,4 +193,4 @@ def RedLED_on(pin):
 while True:
     print ("Please Press Door Bell to Begin")
     if GPIO.wait_for_edge(23, GPIO.FALLING):
-        welcomeFunc()
+        introduction().run()
