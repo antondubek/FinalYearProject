@@ -60,6 +60,14 @@
     BoxLayout:
         orientation: 'vertical'
 
+        canvas.before:
+            Color:
+                rgba: root.red, root.green, 0, 1
+            Rectangle:
+                # self here refers to the widget i.e FloatLayout
+                pos: self.pos
+                size: self.size
+
         BoxLayout:
             orientation: 'vertical'
             Label:

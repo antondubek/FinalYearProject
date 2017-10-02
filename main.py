@@ -23,7 +23,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 from kivy.clock import Clock
 
 ####
@@ -139,22 +139,27 @@ class RFIDScreen(Screen):
 
 class KeypadScreen(Screen):
     keypadTextTest = StringProperty("Please Input 4 Digit Passcode")
+    red = NumericProperty(0)
+    green = NumericProperty(0)
 
     def Decision(self, *args):
         keypadOutput = FourDigitCodeCheck()
         if keypadOutput == True:
             Clock.schedule_once(self.textOpen)
             Clock.schedule_once(DoorControl.DoorOpen)
-            Clock.schedule_once(self.textClosed, 5)
-            Clock.schedule_once(DoorControl.DoorClosed, 5)
-            Clock.schedule_once(DoorControl.ResetMenu, 6)
+            Clock.schedule_once(self.textClosed, 10)
+            Clock.schedule_once(DoorControl.DoorClosed, 10)
+            Clock.schedule_once(DoorControl.ResetMenu, 15)
             return
 
     def textOpen(self, *args):
         self.keypadTextTest = "Door Open"
+        self.green = 1
 
     def textClosed(self, *args):
         self.keypadTextTest = "Door Closed"
+        self.green = 0
+        self.red = 1
 
 
 class AlertSomeoneScreen(Screen):
