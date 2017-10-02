@@ -1,21 +1,82 @@
-<InitialMenu>:
-    orientation: 'vertical'
+#MyScreenManager:
+#    InitialMenu:
+#    RFIDScreen:
 
+<InitialMenu>:
+    #name: 'InitialMenu'
     BoxLayout:
         orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                id: welcomeMessage
+                text: 'Welcome to Smart Doorbell'
+                font_size: 50
+
+            Button:
+                text: 'Alert Someone'
+                on_release: root.AlertSomeone()
+
+            Button:
+                text: 'Keypad'
+                on_press: root.manager.current = 'Keypad'
+
+            Button:
+                text: 'RFID'
+                on_press: root.manager.current = 'RFID'
+
+<RFIDScreen>:
+    on_enter: root.Decision()
+    BoxLayout:
+        id: RFIDBackground
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: 0,0,1,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                id: rfidtext
+                text: 'RFID Authentication\n Please Present Keycard / Fob'
+                font_size: 50
+
+<AlertSomeoneScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: 'Alert Someone'
+                font_size: 50
+
+<KeypadScreen>:
+    on_enter: root.Decision()
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                id: keypadtext
+                text: root.keypadTextTest
+                font_size: 50
+
+<DoorOpenScreen>:
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 0, 1, 0, 1
+            Rectangle:
+                # self here refers to the widget i.e FloatLayout
+                pos: self.pos
+                size: self.size
         Label:
-            id: welcomeMessage
-            text: 'Welcome to Smart Doorbell'
-            font_size: 50
-
-        Button:
-            text: 'Alert Someone'
-            on_release: root.AlertSomeone()
-
-        Button:
-            text: 'Keypad'
-            on_release: root.Keypad()
-
-        Button:
-            text: 'RFID'
-            on_release: root.RFID()
+            text: 'Door Open : Please Enter'
+            font_size: 60
+            pos_hint: {'center_x':.5, 'center_y': .5}

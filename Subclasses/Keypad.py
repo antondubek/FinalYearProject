@@ -32,7 +32,7 @@ def FourDigitCodeCheck():
 
     # Setup variables
     attempt = "0000"
-    passcode = "1234"
+    passcode = "6969"
     counter = 0
     attemptCounter = 0
     attemptsAllowed = 3

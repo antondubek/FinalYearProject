@@ -21,6 +21,10 @@ from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.lang import Builder
+from kivy.properties import ObjectProperty, StringProperty
+from kivy.clock import Clock
 
 ####
 ## Initialisation of Pins
@@ -116,25 +120,82 @@ def welcomeFunc():
 
     """
 
+Builder.load_file('Subclasses/welcomemenu.kv')
 
-class InitialMenu(BoxLayout):
+class DoorOpenScreen(Screen):
+    pass
+
+class RFIDScreen(Screen):
+
+    def Decision(self, *args):
+        rfidOutput = checkRFIDTag()
+        text = self.ids['rfidtext']
+        if rfidOutput == True:
+            text.text = 'Door Open Please Enter'
+            doorOpen()
+            text.text = 'RFID Authentication\n Please Present Keycard / Fob'
+            MyScreenManager.current = 'InitialMenu'
+            return
+
+class KeypadScreen(Screen):
+    keypadTextTest = StringProperty("Please Input 4 Digit Passcode")
+
+    def Decision(self, *args):
+        keypadOutput = FourDigitCodeCheck()
+        if keypadOutput == True:
+            Clock.schedule_once(self.textOpen)
+            Clock.schedule_once(DoorControl.DoorOpen)
+            Clock.schedule_once(self.textClosed, 5)
+            Clock.schedule_once(DoorControl.DoorClosed, 5)
+            Clock.schedule_once(DoorControl.ResetMenu, 6)
+            return
+
+    def textOpen(self, *args):
+        self.keypadTextTest = "Door Open"
+
+    def textClosed(self, *args):
+        self.keypadTextTest = "Door Closed"
+
+
+class AlertSomeoneScreen(Screen):
+    pass
+
+class InitialMenu(Screen):
     def AlertSomeone(self, *args):
         print 'Alert'
-
-    def RFID(self, *args):
-        print 'RFID'
-        choiceProcessor(2)
-        Window().close
-        App.get_running_app().stop()
 
 
     def Keypad(self, *args):
         print 'Keypad'
 
+class DoorControl(Screen):
+    def DoorOpen(self, *args):
+        print ("Door Open : Please Enter")
+        GreenLED("ON")
+        return
+
+    def DoorClosed(self, *args):
+        GreenLED("OFF")
+        return
+
+    def ResetMenu(self, *args):
+        MyScreenManager.current = 'InitialMenu'
+
+
+#class MyScreenManager(ScreenManager):
+#    pass
+MyScreenManager = ScreenManager()
+MyScreenManager.add_widget(InitialMenu(name='InitialMenu'))
+MyScreenManager.add_widget(RFIDScreen(name='RFID'))
+MyScreenManager.add_widget(KeypadScreen(name='Keypad'))
+MyScreenManager.add_widget(DoorOpenScreen(name='DoorOpen'))
+
+
 class introduction(App):
     def build(self):
-        self.load_kv('Subclasses/welcomemenu.kv')
-        return InitialMenu()
+        #self.load_kv('Subclasses/welcomemenu.kv')
+        #return InitialMenu()
+        return MyScreenManager
 
 
 
@@ -166,10 +227,11 @@ def choiceProcessor(choiceNo):
             return
 
 # Function to open / release door. LED for bug fixing
-def doorOpen():
+def doorOpen1():
     print ("Door Open : Please Enter")
     GreenLED("ON")
-    sleep(5)
+    #sleep(5)
+def doorOpen2():
     GreenLED("OFF")
     return
 
