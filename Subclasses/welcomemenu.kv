@@ -56,10 +56,14 @@
                 font_size: 50
 
 <KeypadScreen>:
+    # Resets the screen background and text
+    on_pre_enter: root.textReset()
+    # Runs the decision making process
     on_enter: root.Decision()
+
     BoxLayout:
         orientation: 'vertical'
-
+        # Canvas is the background square.
         canvas.before:
             Color:
                 rgba: root.red, root.green, 0, 1
@@ -68,23 +72,10 @@
                 pos: self.pos
                 size: self.size
 
+        # Text is here.
         BoxLayout:
             orientation: 'vertical'
             Label:
                 id: keypadtext
-                text: root.keypadTextTest
+                text: root.keypadText
                 font_size: 50
-
-<DoorOpenScreen>:
-    FloatLayout:
-        canvas.before:
-            Color:
-                rgba: 0, 1, 0, 1
-            Rectangle:
-                # self here refers to the widget i.e FloatLayout
-                pos: self.pos
-                size: self.size
-        Label:
-            text: 'Door Open : Please Enter'
-            font_size: 60
-            pos_hint: {'center_x':.5, 'center_y': .5}
