@@ -59,7 +59,47 @@ Builder.load_file('Subclasses/welcomemenu.kv')
 
 # RFID Screen loaded on option select
 class RFIDScreen(Screen):
-    pass
+    # Initial Text on the screen
+    keypadText = StringProperty("Please present card to reader")
+    # Initial Green and Red Background RGBA values
+    red = NumericProperty(0)
+    green = NumericProperty(0)
+
+    # Function called on load of the screen.
+    def Decision(self, *args):
+        # Runs keypad code check from subclass returning T/F
+        keypadOutput = checkRFIDTag()
+        # True Output sees text, background and LED used as an inidicator.
+        if keypadOutput == True:
+            Clock.schedule_once(self.textOpen) # Door Open + Green Background
+            Clock.schedule_once(DoorControl.DoorOpen) # LED Green
+            Clock.schedule_once(self.textClosed, 10) # Door Closed + Red Background
+            Clock.schedule_once(DoorControl.DoorClosed, 10) # LED RED
+            Clock.schedule_once(DoorControl.ResetMenu, 15) # Back to initial Menu
+            return
+
+        elif keypadOutput == False:
+            Clock.schedule_once(self.textIncorrect)
+            Clock.schedule_once(DoorControl.ResetMenu, 10)
+
+
+    def textOpen(self, *args):
+        self.keypadText = "Door Open"
+        self.green = 1
+
+    def textClosed(self, *args):
+        self.keypadText = "Door Closed"
+        self.green = 0
+        self.red = 1
+
+    def textIncorrect(self, *args):
+        self.keypadText = "Card Not Accepted \n Please try another option"
+        self.red = 1
+
+    def textReset(self, *args):
+        self.keypadText = "Please present card to reader"
+        self.green = 0
+        self.red = 0
 
 # Keypad Screen loaded on option select
 class KeypadScreen(Screen):

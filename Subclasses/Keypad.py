@@ -34,8 +34,8 @@ def FourDigitCodeCheck():
     attempt = "0000"
     passcode = "6969"
     counter = 0
-    attemptCounter = 0
-    attemptsAllowed = 3
+    #attemptCounter = 0
+    #attemptsAllowed = 3
 
     print ("Enter 4 Digit Pin Code")
 
@@ -43,40 +43,39 @@ def FourDigitCodeCheck():
     while True:
 
         """ If attemptCounter < attemptsAllowed """
-        if (attemptCounter < attemptsAllowed):
+        #if (attemptCounter < attemptsAllowed):
             # Loop to get a pressed digit
-            digit = None
-            while digit == None:
-                digit = kp.getKey()
+        digit = None
+        while digit == None:
+            digit = kp.getKey()
 
-                # Print the result
-            print ("Digit Entered:       %s"%digit)
-            attempt = (attempt[1:] + str(digit))
-            print ("Attempt value:       %s"%attempt)
+            # Print the result
+        print ("Digit Entered:       %s"%digit)
+        attempt = (attempt[1:] + str(digit))
+        print ("Attempt value:       %s"%attempt)
 
-            # Check for passcode match
-            if (attempt == passcode):
-                print ("Your code was correct, goodbye.")
-                return True
-
-            else:
-                counter += 1
-                print ("Entered digit count: %s"%counter)
-
-                if (counter >= 4):
-                    print ("Incorrect code!")
-                    sleep(1)
-                    print ("Try Again")
-                    sleep(1)
-                    counter = 0
-                    attemptCounter += 1
-
-
-            sleep(0.5)
+        # Check for passcode match
+        if (attempt == passcode):
+            print ("Your code was correct, goodbye.")
+            return True
 
         else:
-            print ("You have exceeded the number of attempts")
-            return False
+            counter += 1
+            #print ("Entered digit count: %s"%counter)
+
+            if (counter >= 4):
+                print ("Incorrect code!")
+                sleep(1)
+                return False
+                counter = 0
+            #attemptCounter += 1
+
+
+        sleep(0.5)
+
+        #else:
+        #    print ("You have exceeded the number of attempts")
+        #    return False
 
 
 ####

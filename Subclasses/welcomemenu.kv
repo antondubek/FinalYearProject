@@ -27,22 +27,28 @@
                 on_press: root.manager.current = 'RFID'
 
 <RFIDScreen>:
+    # Resets the screen background and text
+    on_pre_enter: root.textReset()
+    # Runs the decision making process
     on_enter: root.Decision()
+
     BoxLayout:
-        id: RFIDBackground
         orientation: 'vertical'
+        # Canvas is the background square.
         canvas.before:
             Color:
-                rgba: 0,0,1,1
+                rgba: root.red, root.green, 0, 1
             Rectangle:
+                # self here refers to the widget i.e FloatLayout
                 pos: self.pos
                 size: self.size
 
+        # Text is here.
         BoxLayout:
             orientation: 'vertical'
             Label:
-                id: rfidtext
-                text: 'RFID Authentication\n Please Present Keycard / Fob'
+                id: keypadtext
+                text: root.keypadText
                 font_size: 50
 
 <AlertSomeoneScreen>:
