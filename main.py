@@ -13,6 +13,7 @@ import sys
 from Subclasses.Keypad import FourDigitCodeCheck
 from Subclasses.RFID import checkRFIDTag
 from Subclasses.Images import takePicture
+from Subclasses.Alert import pushNotification
 
 from kivy.app import App
 from kivy.uix.button import Button
@@ -75,12 +76,12 @@ class RFIDScreen(Screen):
             Clock.schedule_once(DoorControl.DoorOpen) # LED Green
             Clock.schedule_once(self.textClosed, 10) # Door Closed + Red Background
             Clock.schedule_once(DoorControl.DoorClosed, 10) # LED RED
-            Clock.schedule_once(DoorControl.ResetMenu, 15) # Back to initial Menu
+            Clock.schedule_once(DoorControl.KillApp, 15) # Back to initial Menu
             return
 
         elif keypadOutput == False:
             Clock.schedule_once(self.textIncorrect)
-            Clock.schedule_once(DoorControl.ResetMenu, 10)
+            Clock.schedule_once(DoorControl.KillApp, 7)
 
 
     def textOpen(self, *args):
@@ -93,7 +94,7 @@ class RFIDScreen(Screen):
         self.red = 1
 
     def textIncorrect(self, *args):
-        self.keypadText = "Card Not Accepted \n Please try another option"
+        self.keypadText = "RFID Not Recognised"
         self.red = 1
 
     def textReset(self, *args):
@@ -119,12 +120,12 @@ class KeypadScreen(Screen):
             Clock.schedule_once(DoorControl.DoorOpen) # LED Green
             Clock.schedule_once(self.textClosed, 10) # Door Closed + Red Background
             Clock.schedule_once(DoorControl.DoorClosed, 10) # LED RED
-            Clock.schedule_once(DoorControl.ResetMenu, 15) # Back to initial Menu
+            Clock.schedule_once(DoorControl.KillApp, 15) # Back to initial Menu
             return
 
         elif keypadOutput == False:
             Clock.schedule_once(self.textIncorrect)
-            Clock.schedule_once(DoorControl.ResetMenu, 10)
+            Clock.schedule_once(DoorControl.KillApp, 7)
 
 
     def textOpen(self, *args):
@@ -137,7 +138,7 @@ class KeypadScreen(Screen):
         self.red = 1
 
     def textIncorrect(self, *args):
-        self.keypadText = "Incorrect Code \n Please try another option"
+        self.keypadText = "Incorrect Code"
         self.red = 1
 
     def textReset(self, *args):
@@ -148,9 +149,15 @@ class KeypadScreen(Screen):
 
 
 class AlertSomeoneScreen(Screen):
-    pass
+    def Push(self, *args):
+        pushNotification()
+        #Start Video System
+        os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./start.sh")
 
 class InitialMenu(Screen):
+    pass
+
+class FacialRecognitionScreen(Screen):
     pass
 
 class DoorControl(Screen):
@@ -163,8 +170,9 @@ class DoorControl(Screen):
         GreenLED("OFF")
         return
 
-    def ResetMenu(self, *args):
+    def KillApp(self, *args):
         MyScreenManager.current = 'InitialMenu'
+        App.get_running_app().stop()
         return
 
 # Creation of a ScreenManager to host kivy screens.
@@ -172,11 +180,23 @@ MyScreenManager = ScreenManager()
 MyScreenManager.add_widget(InitialMenu(name='InitialMenu'))
 MyScreenManager.add_widget(RFIDScreen(name='RFID'))
 MyScreenManager.add_widget(KeypadScreen(name='Keypad'))
+MyScreenManager.add_widget(AlertSomeoneScreen(name='Alert'))
+MyScreenManager.add_widget(FacialRecognitionScreen(name='FaceRecog'))
 
 # Building the kivy app and loading the ScreenManager
 class introduction(App):
     def build(self):
         return MyScreenManager
+
+
+class WelcomeMessage(BoxLayout):
+    pass
+
+class welcomeText(App):
+    def build(self):
+        Clock.schedule_once(DoorControl.KillApp, 2)
+        return WelcomeMessage()
+
 
 def GreenLED(status):
     if status == "ON":
@@ -196,6 +216,8 @@ def GreenLED(status):
 
 # Polls for when button is pressed and calls welcome function.
 while True:
+    welcomeText().run()
+
     print ("Please Press Door Bell to Begin")
     if GPIO.wait_for_edge(23, GPIO.FALLING):
         introduction().run()

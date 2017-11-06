@@ -1,6 +1,16 @@
 #MyScreenManager:
 #    InitialMenu:
 #    RFIDScreen:
+<WelcomeMessage>:
+    orientation: 'vertical'
+
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: welcomeMessage
+            text: 'Welcome to the Goat House \n\n     Please press Doorbell'
+            font_size: 50
+
 
 <InitialMenu>:
     #name: 'InitialMenu'
@@ -16,7 +26,7 @@
 
             Button:
                 text: 'Alert Someone'
-                on_release: root.AlertSomeone()
+                on_release: root.manager.current = 'Alert'
 
             Button:
                 text: 'Keypad'
@@ -26,7 +36,27 @@
                 text: 'RFID'
                 on_press: root.manager.current = 'RFID'
 
-<RFIDScreen>:
+            Button:
+                text: 'Facial Recognition'
+                on_press: root.manager.current = 'FaceRecog'
+
+
+<AlertSomeoneScreen>:
+
+    on_enter: root.Push()
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: 'Please look at the camera'
+                font_size: 50
+            Image:
+                source: 'facescan.gif'
+                anim_loop: 1
+
+<KeypadScreen>:
     # Resets the screen background and text
     on_pre_enter: root.textReset()
     # Runs the decision making process
@@ -51,17 +81,7 @@
                 text: root.keypadText
                 font_size: 50
 
-<AlertSomeoneScreen>:
-    BoxLayout:
-        orientation: 'vertical'
-
-        BoxLayout:
-            orientation: 'vertical'
-            Label:
-                text: 'Alert Someone'
-                font_size: 50
-
-<KeypadScreen>:
+<RFIDScreen>:
     # Resets the screen background and text
     on_pre_enter: root.textReset()
     # Runs the decision making process
