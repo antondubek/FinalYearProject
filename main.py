@@ -10,10 +10,10 @@ import RPi.GPIO as GPIO
 from time import sleep
 import os
 import sys
-from Subclasses.Keypad import FourDigitCodeCheck
+from Subclasses.Keypad import digit
 from Subclasses.RFID import checkRFIDTag
 from Subclasses.Images import takePicture
-from Subclasses.Alert import pushNotification
+from Subclasses.Alert import SendAlert
 
 from kivy.app import App
 from kivy.uix.button import Button
@@ -27,6 +27,7 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 from kivy.clock import Clock
 
+from functools import partial
 ####
 ## Initialisation of Pins
 ####
@@ -60,8 +61,7 @@ Builder.load_file('Subclasses/welcomemenu.kv')
 
 # RFID Screen loaded on option select
 class RFIDScreen(Screen):
-    # Initial Text on the screen
-    keypadText = StringProperty("Please present card to reader")
+
     # Initial Green and Red Background RGBA values
     red = NumericProperty(0)
     green = NumericProperty(0)
@@ -72,87 +72,76 @@ class RFIDScreen(Screen):
         keypadOutput = checkRFIDTag()
         # True Output sees text, background and LED used as an inidicator.
         if keypadOutput == True:
-            Clock.schedule_once(self.textOpen) # Door Open + Green Background
-            Clock.schedule_once(DoorControl.DoorOpen) # LED Green
-            Clock.schedule_once(self.textClosed, 10) # Door Closed + Red Background
-            Clock.schedule_once(DoorControl.DoorClosed, 10) # LED RED
+            Clock.schedule_once(DoorControl.DoorOpen) # DoorOpen Sequence
+            Clock.schedule_once(DoorControl.DoorClosed, 10) # Door Closed Sequence
             Clock.schedule_once(DoorControl.KillApp, 15) # Back to initial Menu
             return
 
+        # False output calls incorrect text function and resets
         elif keypadOutput == False:
             Clock.schedule_once(self.textIncorrect)
             Clock.schedule_once(DoorControl.KillApp, 7)
 
-
-    def textOpen(self, *args):
-        self.keypadText = "Door Open"
-        self.green = 1
-
-    def textClosed(self, *args):
-        self.keypadText = "Door Closed"
-        self.green = 0
-        self.red = 1
-
+    # Function changing text to the not Recognised text
     def textIncorrect(self, *args):
-        self.keypadText = "RFID Not Recognised"
+        self.the_text.text = "RFID Not Recognised"
         self.red = 1
 
+    # Reset function called pre enter of the page. Put Default text here.
     def textReset(self, *args):
-        self.keypadText = "Please present card to reader"
+        self.the_text.text = "Please present card to reader"
         self.green = 0
         self.red = 0
 
 # Keypad Screen loaded on option select
 class KeypadScreen(Screen):
-    # Initial Text on the screen
-    keypadText = StringProperty("Please Input 4 Digit Passcode")
+
     # Initial Green and Red Background RGBA values
     red = NumericProperty(0)
     green = NumericProperty(0)
 
     # Function called on load of the screen.
     def Decision(self, *args):
-        # Runs keypad code check from subclass returning T/F
-        keypadOutput = FourDigitCodeCheck()
-        # True Output sees text, background and LED used as an inidicator.
-        if keypadOutput == True:
-            Clock.schedule_once(self.textOpen) # Door Open + Green Background
+
+        # Creates password and iterates through to get 4 digit string.
+        password = ''
+        for i in range(4):
+            pin = digit()
+            print(pin)
+            password += pin
+            #self.the_pin.text += pin
+
+        print(password) # Debug
+
+        # Typed password is correct sees text, background and LED used as an inidicator.
+        if password == "1234":
             Clock.schedule_once(DoorControl.DoorOpen) # LED Green
-            Clock.schedule_once(self.textClosed, 10) # Door Closed + Red Background
             Clock.schedule_once(DoorControl.DoorClosed, 10) # LED RED
             Clock.schedule_once(DoorControl.KillApp, 15) # Back to initial Menu
             return
 
-        elif keypadOutput == False:
-            Clock.schedule_once(self.textIncorrect)
-            Clock.schedule_once(DoorControl.KillApp, 7)
+        # If password is wrong calls incorrect function and resets.
+        else:
+            Clock.schedule_once(partial(self.textIncorrect, password))
+            Clock.schedule_once(DoorControl.KillApp, 10)
 
-
-    def textOpen(self, *args):
-        self.keypadText = "Door Open"
-        self.green = 1
-
-    def textClosed(self, *args):
-        self.keypadText = "Door Closed"
-        self.green = 0
+    # Function changing text to the not wrong pin text
+    def textIncorrect(self, password, *args):
+        self.the_text.text = "Incorrect Code: " + password
         self.red = 1
 
-    def textIncorrect(self, *args):
-        self.keypadText = "Incorrect Code"
-        self.red = 1
-
+    # Reset function called pre enter of the page. Put Default text here.
     def textReset(self, *args):
-        self.keypadText = "Please Input 4 Digit Passcode"
+        self.the_text.text = "Please Input 4 Digit Passcode"
+        self.the_pin.text = ""
         self.green = 0
         self.red = 0
 
 
-
 class AlertSomeoneScreen(Screen):
     def Push(self, *args):
-        pushNotification()
+        print (SendAlert())
         #Start Video System
-        os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./start.sh")
 
 class InitialMenu(Screen):
     pass
@@ -163,10 +152,16 @@ class FacialRecognitionScreen(Screen):
 class DoorControl(Screen):
     def DoorOpen(self, *args):
         print ("Door Open : Please Enter")
+        MyScreenManager.current_screen.the_text.text = "Door Open"
+        MyScreenManager.current_screen.green = 1
         GreenLED("ON")
         return
 
     def DoorClosed(self, *args):
+        print ("Door Closed : Please Enter")
+        MyScreenManager.current_screen.the_text.text = "Door Closed"
+        MyScreenManager.current_screen.green = 0
+        MyScreenManager.current_screen.red = 1
         GreenLED("OFF")
         return
 
@@ -220,4 +215,5 @@ while True:
 
     print ("Please Press Door Bell to Begin")
     if GPIO.wait_for_edge(23, GPIO.FALLING):
+        #os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./start.sh")
         introduction().run()

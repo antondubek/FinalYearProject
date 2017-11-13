@@ -6,32 +6,42 @@ File: Alert
 ####
 ## Import libraries
 ####
-import sys
-import httplib, urllib
-sys.path.append('/home/pi/Pushover')
-import PushoverCred
+import telepot
+import time
+from telepot.loop import MessageLoop
 
 ####
 ## Initialisation of Pins
 ####
+bot = telepot.Bot('471263091:AAEFiEIp0Sd_ud0I0G7ARHzIsTE56TMmm2Y')
+chatID = 489826446
 
+id = 0
 ####
 ## Functions
 ####
-def pushNotification():
-    conn = httplib.HTTPSConnection("api.pushover.net:443")
-    conn.request("POST", "/1/messages.json",
-      urllib.urlencode({
-        "token": "a2dxu27tsra4gvh7m6kbd6pw8kdjuj",  # Insert app token here
-        "user": "uf7i29tzpimm6bk9ram3p2ejujzb26",   # Insert user token here
-        "html": "1",                                # 1 for HTML, 0 to disable
-        "title": "Doorbell!",                       # Title of the message
-        "message": "<b>Front Door</b> Someone is at your Door!",       # Content of the message
-        "url": "http://google.com",                 # Link to be included in message
-        "url_title": "View live stream",            # Text for the link
-        "sound": "siren",                           # Define the sound played
-      }), { "Content-type": "application/x-www-form-urlencoded" })
-    conn.getresponse()
+def handle(msg):
+    command = msg['text']
+
+    print 'Got command: %s' % command
+
+    if command == '/yes':
+        bot.sendMessage(chatID, 'Yes Selected')
+        id = 1
+        print('True')
+
+    elif command == '/no':
+        bot.sendMessage(chatID, 'No Selected')
+        id = 2
+        print('False')
+
+def SendAlert():
+    bot.sendMessage(chatID, 'Someone is at your door! \n Reply /yes or /no')
+    bot.sendPhoto(chatID, open('Subclasses/image.jpg','rb'), caption ='test')
+    MessageLoop(bot, handle).run_as_thread(timeout=5)
+    time.sleep(5)
+    return id
+
 ####
 ## Main
 ####

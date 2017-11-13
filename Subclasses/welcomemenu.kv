@@ -56,37 +56,43 @@
                 source: 'facescan.gif'
                 anim_loop: 1
 
-<KeypadScreen>:
-    # Resets the screen background and text
-    on_pre_enter: root.textReset()
-    # Runs the decision making process
-    on_enter: root.Decision()
-
-    BoxLayout:
-        orientation: 'vertical'
-        # Canvas is the background square.
-        canvas.before:
-            Color:
-                rgba: root.red, root.green, 0, 1
-            Rectangle:
-                # self here refers to the widget i.e FloatLayout
-                pos: self.pos
-                size: self.size
-
-        # Text is here.
-        BoxLayout:
-            orientation: 'vertical'
-            Label:
-                id: keypadtext
-                text: root.keypadText
-                font_size: 50
-
 <RFIDScreen>:
     # Resets the screen background and text
     on_pre_enter: root.textReset()
     # Runs the decision making process
     on_enter: root.Decision()
 
+    the_text: RFIDtext
+
+    BoxLayout:
+        orientation: 'vertical'
+        # Canvas is the background square.
+        canvas.before:
+            Color:
+                rgba: root.red, root.green, 0, 1
+            Rectangle:
+                # self here refers to the widget i.e FloatLayout
+                pos: self.pos
+                size: self.size
+
+        # Text is here.
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                id: RFIDtext
+                #To set default text check main textReset functions
+                text: ""
+                font_size: 50
+
+<KeypadScreen>:
+    # Resets the screen background and text
+    on_pre_enter: root.textReset()
+    # Runs the decision making process
+    on_enter: root.Decision()
+
+    the_text: keypadtext
+    the_pin: keypadPin
+
     BoxLayout:
         orientation: 'vertical'
         # Canvas is the background square.
@@ -103,5 +109,11 @@
             orientation: 'vertical'
             Label:
                 id: keypadtext
-                text: root.keypadText
+                #To set default text check main textReset functions
+                text: ""
+                font_size: 50
+            Label:
+                id: keypadPin
+                #To set default text check main textReset functions
+                text: ""
                 font_size: 50
