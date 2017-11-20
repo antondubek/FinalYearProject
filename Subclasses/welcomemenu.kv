@@ -42,19 +42,28 @@
 
 
 <AlertSomeoneScreen>:
-
+    on_pre_enter: root.textReset()
     on_enter: root.Push()
+
+    the_text: AlertText
+
     BoxLayout:
         orientation: 'vertical'
+        # Canvas is the background square.
+        canvas.before:
+            Color:
+                rgba: root.red, root.green, 0, 1
+            Rectangle:
+                # self here refers to the widget i.e FloatLayout
+                pos: self.pos
+                size: self.size
 
         BoxLayout:
             orientation: 'vertical'
             Label:
-                text: 'Please look at the camera'
+                id: AlertText
+                text: ''
                 font_size: 50
-            Image:
-                source: 'facescan.gif'
-                anim_loop: 1
 
 <RFIDScreen>:
     # Resets the screen background and text

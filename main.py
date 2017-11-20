@@ -139,9 +139,39 @@ class KeypadScreen(Screen):
 
 
 class AlertSomeoneScreen(Screen):
+
+    red = NumericProperty(0)
+    green = NumericProperty(0)
+
     def Push(self, *args):
-        print (SendAlert())
-        #Start Video System
+
+        #SendAlert Returns int 1 for yes, 2 for no, 0 for no response
+        decision = SendAlert()
+        print decision
+
+        if decision == True:
+            Clock.schedule_once(DoorControl.DoorOpen) # LED Green
+            Clock.schedule_once(DoorControl.DoorClosed, 10) # LED RED
+            Clock.schedule_once(self.stopLiveStream, 15)
+            Clock.schedule_once(DoorControl.KillApp, 15) # Back to initial Menu
+
+        else:
+            Clock.schedule_once(self.entryDeclined)
+            Clock.schedule_once(self.stopLiveStream, 10)
+            Clock.schedule_once(DoorControl.KillApp, 10)
+
+    def entryDeclined(self, *args):
+        self.the_text.text = "Entry Declined"
+        self.red = 1
+
+    def stopLiveStream(self, *args):
+        os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./stop.sh")
+
+    def textReset(self, *args):
+        self.the_text.text = "Please Look at the Camera \n Wait for Response"
+        self.green = 0
+        self.red = 0
+
 
 class InitialMenu(Screen):
     pass
@@ -189,7 +219,7 @@ class WelcomeMessage(BoxLayout):
 
 class welcomeText(App):
     def build(self):
-        Clock.schedule_once(DoorControl.KillApp, 2)
+        Clock.schedule_once(DoorControl.KillApp, 10)
         return WelcomeMessage()
 
 
@@ -215,5 +245,4 @@ while True:
 
     print ("Please Press Door Bell to Begin")
     if GPIO.wait_for_edge(23, GPIO.FALLING):
-        #os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./start.sh")
         introduction().run()
