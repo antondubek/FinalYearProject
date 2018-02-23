@@ -14,6 +14,7 @@ from Subclasses.Keypad import digit
 from Subclasses.RFID import checkRFIDTag
 from Subclasses.Images import takePicture
 from Subclasses.Alert import SendAlert
+from Subclasses.faceRecognition.box import checkFace
 
 from kivy.app import App
 from kivy.uix.button import Button
@@ -22,6 +23,7 @@ from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
@@ -89,7 +91,7 @@ class RFIDScreen(Screen):
 
     # Reset function called pre enter of the page. Put Default text here.
     def textReset(self, *args):
-        self.the_text.text = "Please present card to reader"
+        self.the_text.text = "Please present card to keypad"
         self.green = 0
         self.red = 0
 
@@ -151,14 +153,14 @@ class AlertSomeoneScreen(Screen):
 
         if decision == True:
             Clock.schedule_once(DoorControl.DoorOpen) # LED Green
-            Clock.schedule_once(DoorControl.DoorClosed, 10) # LED RED
-            Clock.schedule_once(self.stopLiveStream, 15)
-            Clock.schedule_once(DoorControl.KillApp, 15) # Back to initial Menu
+            Clock.schedule_once(DoorControl.DoorClosed, 30) # LED RED
+            Clock.schedule_once(self.stopLiveStream, 35)
+            Clock.schedule_once(DoorControl.KillApp, 35) # Back to initial Menu
 
         else:
             Clock.schedule_once(self.entryDeclined)
-            Clock.schedule_once(self.stopLiveStream, 10)
-            Clock.schedule_once(DoorControl.KillApp, 10)
+            Clock.schedule_once(self.stopLiveStream, 30)
+            Clock.schedule_once(DoorControl.KillApp, 30)
 
     def entryDeclined(self, *args):
         self.the_text.text = "Entry Declined"
@@ -177,7 +179,32 @@ class InitialMenu(Screen):
     pass
 
 class FacialRecognitionScreen(Screen):
-    pass
+
+    red = NumericProperty(0)
+    green = NumericProperty(0)
+
+    def FacialRecognition(self, *args):
+        decision = checkFace()
+        if decision == True:
+            Clock.schedule_once(DoorControl.DoorOpen) # DoorOpen Sequence
+            Clock.schedule_once(DoorControl.DoorClosed, 30) # Door Closed Sequence
+            Clock.schedule_once(DoorControl.KillApp, 35) # Back to initial Menu
+            return
+
+        # False output calls incorrect text function and resets
+        elif decision == False:
+            Clock.schedule_once(self.textIncorrect)
+            Clock.schedule_once(DoorControl.KillApp, 30)
+
+    # Function changing text to the not Recognised text
+    def textIncorrect(self, *args):
+        self.the_text.text = "Face Not Recognised"
+        self.red = 1
+
+    def textReset(self, *args):
+        self.the_text.text = "Please Look at the Camera"
+        self.green = 0
+        self.red = 0
 
 class DoorControl(Screen):
     def DoorOpen(self, *args):
@@ -219,7 +246,7 @@ class WelcomeMessage(BoxLayout):
 
 class welcomeText(App):
     def build(self):
-        Clock.schedule_once(DoorControl.KillApp, 10)
+        Clock.schedule_once(DoorControl.KillApp, 3)
         return WelcomeMessage()
 
 

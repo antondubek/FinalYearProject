@@ -14,31 +14,40 @@
 
 <InitialMenu>:
     #name: 'InitialMenu'
-    BoxLayout:
-        orientation: 'vertical'
+    GridLayout:
+        rows: 2
 
         BoxLayout:
             orientation: 'vertical'
             Label:
                 id: welcomeMessage
-                text: 'Welcome to Smart Doorbell'
-                font_size: 50
+                text: 'Welcome to The Goat House \n\n Please Select An Option'
+                font_size: 35
+                halign: 'center'
+                valign: 'middle'
 
-            Button:
-                text: 'Alert Someone'
-                on_release: root.manager.current = 'Alert'
+        GridLayout:
+            cols: 2
 
-            Button:
-                text: 'Keypad'
-                on_press: root.manager.current = 'Keypad'
+            BoxLayout:
+                orientation: 'vertical'
+                Button:
+                    text: 'Alert Someone'
+                    on_release: root.manager.current = 'Alert'
 
-            Button:
-                text: 'RFID'
-                on_press: root.manager.current = 'RFID'
+                Button:
+                    text: 'Keypad'
+                    on_press: root.manager.current = 'Keypad'
 
-            Button:
-                text: 'Facial Recognition'
-                on_press: root.manager.current = 'FaceRecog'
+            BoxLayout:
+                orientation: 'vertical'
+                Button:
+                    text: 'RFID'
+                    on_press: root.manager.current = 'RFID'
+
+                Button:
+                    text: 'Facial Recognition'
+                    on_press: root.manager.current = 'FaceRecog'
 
 
 <AlertSomeoneScreen>:
@@ -123,6 +132,33 @@
                 font_size: 50
             Label:
                 id: keypadPin
+                #To set default text check main textReset functions
+                text: ""
+                font_size: 50
+
+<FacialRecognitionScreen>
+
+    on_pre_enter: root.textReset()
+    on_enter: root.FacialRecognition()
+
+    the_text: recognitiontext
+
+    BoxLayout:
+        orientation: 'vertical'
+        # Canvas is the background square.
+        canvas.before:
+            Color:
+                rgba: root.red, root.green, 0, 1
+            Rectangle:
+                # self here refers to the widget i.e FloatLayout
+                pos: self.pos
+                size: self.size
+
+        # Text is here.
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                id: recognitiontext
                 #To set default text check main textReset functions
                 text: ""
                 font_size: 50

@@ -7,20 +7,22 @@ File: Alert
 ## Import libraries
 ####
 import os
-import telegram
+#import telegram
+import telepot
 from time import sleep
 import picamera
 from datetime import datetime
-#from telepot.loop import MessageLoop
+from telepot.loop import MessageLoop
 
 ####
 ## Initialisation
 ####
-bot = telegram.Bot(token='471263091:AAEFiEIp0Sd_ud0I0G7ARHzIsTE56TMmm2Y')
-chatID = bot.get_updates()[-1].message.chat_id
+#bot = telegram.Bot(token='471263091:AAEFiEIp0Sd_ud0I0G7ARHzIsTE56TMmm2Y')
+bot = telepot.Bot(token='471263091:AAEFiEIp0Sd_ud0I0G7ARHzIsTE56TMmm2Y')
+chatID = 489826446
 
 
-id = True
+id = False
 ####
 ## Functions
 ####
@@ -45,7 +47,7 @@ def startLiveStream():
 def stopLiveStream():
     os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./stop.sh")
 
-'''
+
 def handle(msg):
     global id
 
@@ -53,26 +55,22 @@ def handle(msg):
 
     print 'Got command: %s' % command
 
-    if command == '/yes':
+    if command.lower() == 'yes':
         bot.sendMessage(chatID, 'Yes Selected')
         id = True
         return
 
-    elif command == '/no':
+    elif command.lower() == 'no':
         bot.sendMessage(chatID, 'No Selected')
         id = False
         return
 
-def SetTrue():
-    global id
-    id = True
-
-def setFalse():
-    global id
-    id = False
+    else:
+        bot.sendMessage(chatID, 'Sorry that command is not recognised please reply "yes" or "no"')
+        return
 
 def getID():
-    return id '''
+    return id
 
 
 def SendAlert():
@@ -80,11 +78,10 @@ def SendAlert():
     os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./start.sh")
     bot.sendMessage(chatID, 'Someone is at your door! \n Reply yes or no \n View Stream @ http://raspberrypi3.local/html/index.php')
     bot.sendPhoto(chatID, open('/home/pi/DoorbellImages/%s.jpg' %label,'rb'), caption = label)
-    #MessageLoop(bot, handle).run_as_thread(timeout=10)
-    #sleep(10)
-    setFalse()
+    MessageLoop(bot, handle).run_as_thread(timeout=10)
+    sleep(10)
 
-    updates = bot.get_updates()
+    '''updates = bot.get_updates()
 
     messages = [u.message.text for u in updates]
     print messages[-1]
@@ -96,9 +93,17 @@ def SendAlert():
 
     else:
         print ('False')
-        return False
+        return False'''
 
-    #return getID()
+    decision = getID()
+
+    if decision == True:
+        bot.sendMessage(chatID, 'Allowing Entry')
+
+    elif decision == False:
+        bot.sendMessage(chatID, 'Declining Entry')
+
+    return decision
 
 ####
 ## Main
