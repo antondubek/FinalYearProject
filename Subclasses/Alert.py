@@ -30,6 +30,7 @@ id = False
 def takePicture():
     with picamera.PiCamera() as camera:
         camera.resolution = (1080, 720)
+        camera.rotation = 90
         now = datetime.now()
         label = now.strftime("%c")
         print ("Initialising Camera")
