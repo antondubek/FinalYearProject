@@ -30,6 +30,7 @@ from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 from kivy.clock import Clock
 
 from functools import partial
+
 ####
 ## Initialisation of Pins
 ####
@@ -38,20 +39,39 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 # LED's
-RedLED_pin = 25
-GreenLED_pin = 18
+RedLED_pin = 18
+GreenLED_pin = 15
+BlueLED_pin = 14
 GPIO.setup(GreenLED_pin,GPIO.OUT)
 GPIO.setup(RedLED_pin,GPIO.OUT)
-GPIO.output(RedLED_pin,GPIO.HIGH)
+GPIO.setup(BlueLED_pin, GPIO.OUT)
+GPIO.output(RedLED_pin,GPIO.LOW)
 GPIO.output(GreenLED_pin,GPIO.LOW)
+GPIO.output(BlueLED_pin, GPIO.HIGH)
 
-# Buttons
-# Main Red
+# Button
+# Piezo Trigger
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# First Button (L to R)
-GPIO.setup(5, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# Second Button (L to R)
-GPIO.setup(1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# RGB Setup
+ButtonRedLED_pin = 4
+ButtonGreenLED_pin = 17
+ButtonBlueLED_pin = 3
+GPIO.setup(ButtonGreenLED_pin,GPIO.OUT)
+GPIO.setup(ButtonRedLED_pin,GPIO.OUT)
+GPIO.setup(ButtonBlueLED_pin, GPIO.OUT)
+# Pull LOW = ON HIGH = OFF
+GPIO.output(ButtonRedLED_pin,GPIO.HIGH)
+GPIO.output(ButtonGreenLED_pin,GPIO.HIGH)
+GPIO.output(ButtonBlueLED_pin, GPIO.LOW)
+
+#Buzzer
+Buzzer_pin = 24
+GPIO.setup(Buzzer_pin, GPIO.OUT)
+GPIO.output(Buzzer_pin, GPIO.LOW)
+
+#Turn Flash OFF
+GPIO.setup(2, GPIO.OUT)
+GPIO.output(2, GPIO.LOW)
 
 # Load in kivy kv file for screens.
 Builder.load_file('Subclasses/welcomemenu.kv')
@@ -88,6 +108,7 @@ class RFIDScreen(Screen):
     def textIncorrect(self, *args):
         self.the_text.text = "RFID Not Recognised"
         self.red = 1
+        LEDS("RED")
 
     # Reset function called pre enter of the page. Put Default text here.
     def textReset(self, *args):
@@ -131,6 +152,7 @@ class KeypadScreen(Screen):
     def textIncorrect(self, password, *args):
         self.the_text.text = "Incorrect Code: " + password
         self.red = 1
+        LEDS("RED")
 
     # Reset function called pre enter of the page. Put Default text here.
     def textReset(self, *args):
@@ -165,6 +187,7 @@ class AlertSomeoneScreen(Screen):
     def entryDeclined(self, *args):
         self.the_text.text = "Entry Declined"
         self.red = 1
+        LEDS("RED")
 
     def stopLiveStream(self, *args):
         os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./stop.sh")
@@ -201,6 +224,7 @@ class FacialRecognitionScreen(Screen):
         self.the_text.text = "Face Not Recognised"
         self.red = 1
 
+
     def textReset(self, *args):
         self.the_text.text = "Please Look at the Camera"
         self.green = 0
@@ -211,7 +235,7 @@ class DoorControl(Screen):
         print ("Door Open : Please Enter")
         MyScreenManager.current_screen.the_text.text = "Door Open"
         MyScreenManager.current_screen.green = 1
-        GreenLED("ON")
+        LEDS("GREEN")
         return
 
     def DoorClosed(self, *args):
@@ -219,7 +243,7 @@ class DoorControl(Screen):
         MyScreenManager.current_screen.the_text.text = "Door Closed"
         MyScreenManager.current_screen.green = 0
         MyScreenManager.current_screen.red = 1
-        GreenLED("OFF")
+        LEDS("RED")
         return
 
     def KillApp(self, *args):
@@ -250,13 +274,32 @@ class welcomeText(App):
         return WelcomeMessage()
 
 
-def GreenLED(status):
-    if status == "ON":
-        GPIO.output(RedLED_pin, GPIO.LOW)
+def LEDS(status):
+    if status == "GREEN":
+        GPIO.output(BlueLED_pin, GPIO.LOW)
         GPIO.output(GreenLED_pin,GPIO.HIGH)
-    elif status == "OFF":
+        GPIO.output(BlueLED_pin, GPIO.LOW)
+        GPIO.output(ButtonRedLED_pin,GPIO.HIGH)
+        GPIO.output(ButtonGreenLED_pin,GPIO.LOW)
+        GPIO.output(ButtonBlueLED_pin, GPIO.HIGH)
+        #GPIO.output(Buzzer_pin, GPIO.HIGH)
+    elif status == "RED":
         GPIO.output(GreenLED_pin,GPIO.LOW)
         GPIO.output(RedLED_pin, GPIO.HIGH)
+        GPIO.output(BlueLED_pin, GPIO.LOW)
+        GPIO.output(ButtonRedLED_pin,GPIO.LOW)
+        GPIO.output(ButtonGreenLED_pin,GPIO.HIGH)
+        GPIO.output(ButtonBlueLED_pin, GPIO.HIGH)
+        #GPIO.output(Buzzer_pin, GPIO.LOW)
+    elif status == "BLUE":
+        GPIO.output(GreenLED_pin,GPIO.LOW)
+        GPIO.output(RedLED_pin, GPIO.LOW)
+        GPIO.output(BlueLED_pin, GPIO.HIGH)
+        GPIO.output(ButtonRedLED_pin,GPIO.HIGH)
+        GPIO.output(ButtonGreenLED_pin,GPIO.HIGH)
+        GPIO.output(ButtonBlueLED_pin, GPIO.LOW)
+        #GPIO.output(Buzzer_pin, GPIO.LOW)
+
     else:
         print ("DEBUG: Please declare LED Green status ON/OFF")
 
@@ -268,6 +311,9 @@ def GreenLED(status):
 
 # Polls for when button is pressed and calls welcome function.
 while True:
+
+    LEDS("BLUE")
+
     welcomeText().run()
 
     print ("Please Press Door Bell to Begin")
