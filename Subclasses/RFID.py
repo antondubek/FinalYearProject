@@ -6,7 +6,10 @@ File: RFID
 ####
 ## Import libraries
 ####
+import RPi.GPIO as GPIO
 import signal
+import os
+import sys
 import time
 from time import sleep
 import picamera
@@ -27,7 +30,7 @@ rdr = RFID()
 
 # Accepted Card Lists
 residentCards = {"229,49,219,209" : "Anthony", "1" : "Mark"}
-cleanerCards = ["3"]
+cleanerCards = ["96,111,87,25"]
 
 ####
 ## Functions
@@ -35,11 +38,9 @@ cleanerCards = ["3"]
 def takePicture():
     with picamera.PiCamera() as camera:
         camera.resolution = (1080, 720)
-        camera.rotation = 90
         now = datetime.now()
         label = now.strftime("%c")
         print ("Initialising Camera")
-        camera.start_preview()
         sleep(2)
         os.chdir ("/home/pi/DoorbellImages")
         camera.capture("%s.jpg" %label)
@@ -62,33 +63,39 @@ def checkRFIDTag():
         # Reads the card RFID tag and writes to cardID string
         if not error:
             cardID = str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
+            break
 
-        now = datetime.now()
-        dayOfWeek = now.today().weekday()
-        hour = now.hour
+    now = datetime.now()
+    dayOfWeek = now.today().weekday()
+    hour = now.hour
 
-        # Check to see if card is a resident
-        if cardID in residentCards:
-            print ("DEBUG: Resident %s" %residentCards[cardID])
-            bot.sendMessage(chatID, '%s has just arrived home' %residentCards[cardID])
-            return residentCards[cardID]
+    print("DEBUG: Day of Week = %s and Hour = %s" %(dayOfWeek, hour))
 
-        # Checks to see if card is a cleaner and in the permitted time frame
-        elif cardID in cleanerAccept:
 
-            # If the dayOfWeek is Mon-Sun(0-6) hour is between 24HR hours
-            if dayOfWeek == 6 and hour < 15 and hour > 14:
-                print ("DEBUG: Cleaner")
-                label = takePicture()
-                bot.sendMessage(chatID, 'The cleaner has arrived and been let in!')
-                bot.sendPhoto(chatID, open('/home/pi/DoorbellImages/%s.jpg' %label,'rb'), caption = label)
-                return True
+    # Check to see if card is a resident
+    if cardID in residentCards:
+        print ("DEBUG: Resident %s" %residentCards[cardID])
+        bot.sendMessage(chatID, '%s has just arrived home' %residentCards[cardID])
+        return residentCards[cardID]
 
-            else:
-                print ("DEBUG: Cleaner False")
-                return False
+    # Checks to see if card is a cleaner and in the permitted time frame
+    elif cardID in cleanerCards:
 
-        # Returns False for unknown cards
+        # If the dayOfWeek is Mon-Sun(0-6) hour is between 24HR hours
+        if dayOfWeek == 6 and hour < 15 and hour > 12:
+            print ("DEBUG: Cleaner")
+            GPIO.output(2, GPIO.HIGH)
+            label = takePicture()
+            GPIO.output(2, GPIO.LOW)
+            bot.sendMessage(chatID, 'The cleaner has arrived and been let in!')
+            bot.sendPhoto(chatID, open('/home/pi/DoorbellImages/%s.jpg' %label,'rb'), caption = label)
+            return True
+
         else:
-            print ("DEBUG: Unrecognised Card False")
+            print ("DEBUG: Cleaner False")
             return False
+
+    # Returns False for unknown cards
+    else:
+        print ("DEBUG: Unrecognised Card False")
+        return False
