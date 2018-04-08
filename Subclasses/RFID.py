@@ -21,6 +21,8 @@ cardsAccept = "229,49,219,209"
 ####
 ## Functions
 ####
+
+# Waits for RFID tag before checking whether in accpeted list. If so, returns true else returns false.
 def checkRFIDTag():
 
     print("Starting")
@@ -31,8 +33,6 @@ def checkRFIDTag():
         rdr.wait_for_tag()
 
         (error, data) = rdr.request()
-        #if not error:
-            #print("\nDetected: " + format(data, "02x"))
 
         (error, uid) = rdr.anticoll()
         if not error:

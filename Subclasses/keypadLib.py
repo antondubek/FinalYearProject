@@ -1,3 +1,9 @@
+'''
+Note: This file is a supporting library file for the 4 column membrane keypad
+The file is derived from [insert github link] and has been modified for this application.
+File: Keypad Library
+'''
+
 #!/usr/bin/python
 
 import RPi.GPIO as GPIO
@@ -5,18 +11,6 @@ import RPi.GPIO as GPIO
 class keypad():
     def __init__(self, columnCount = 4):
         GPIO.setmode(GPIO.BCM)
-
-        # CONSTANTS
-#        if columnCount is 3:
-#            self.KEYPAD = [
-#                [1,2,3],
-#                [4,5,6],
-#                [7,8,9],
-#                ["*",0,"#"]
-#            ]
-
-#            self.ROW         = [26,24,23,22]
-#            self.COLUMN      = [21,19,10]
 
         if columnCount is 4:
             self.KEYPAD = [
@@ -26,6 +20,7 @@ class keypad():
                 ["*",0,"#","D"]
             ]
 
+            # Set Pins here!!
             self.ROW         = [21,20,16,12]
             self.COLUMN      = [26,19,13,6]
         else:
@@ -87,6 +82,8 @@ class keypad():
         for j in range(len(self.COLUMN)):
                 GPIO.setup(self.COLUMN[j], GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+
+# Debugging allowing program to run independantly
 if __name__ == '__main__':
     # Initialize the keypad class
     kp = keypad()

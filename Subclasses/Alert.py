@@ -7,26 +7,30 @@ File: Alert
 ## Import libraries
 ####
 import os
-#import telegram
 import telepot
 from time import sleep
 import picamera
 from datetime import datetime
 from telepot.loop import MessageLoop
+import RPi.GPIO as GPIO
 
 ####
 ## Initialisation
 ####
-#bot = telegram.Bot(token='471263091:AAEFiEIp0Sd_ud0I0G7ARHzIsTE56TMmm2Y')
+
+#Initialises and connects to the telegram doorbell bot
 bot = telepot.Bot(token='471263091:AAEFiEIp0Sd_ud0I0G7ARHzIsTE56TMmm2Y')
 chatID = 489826446
 
-
+# Sets ID to default to False if no reply is received
 id = False
+
 ####
 ## Functions
 ####
 
+# Takes a picture using camera and saves it as time and date
+# Returns the picture name so can be sent by bot to user.
 def takePicture():
     with picamera.PiCamera() as camera:
         camera.resolution = (1080, 720)
@@ -42,6 +46,7 @@ def takePicture():
         camera.close()
         return label
 
+# Live Steam Control
 def startLiveStream():
     os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./start.sh")
 
@@ -49,6 +54,8 @@ def stopLiveStream():
     os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./stop.sh")
 
 
+# Bot message handler looking for yes or no response from user
+# Sets ID True/False based on response which is relayed to Main
 def handle(msg):
     global id
 
@@ -73,28 +80,16 @@ def handle(msg):
 def getID():
     return id
 
-
+# Called function from main; takes picture, starts livestream, sends user picture and livestream link, listens for response
+# for 10 seconds before then returning True or False to Main for processing.
 def SendAlert():
+    GPIO.output(2, GPIO.HIGH)
     label = takePicture()
-    os.system("cd /home/pi/RPi_Cam_Web_Interface ; ./start.sh")
+    startLiveStream()
     bot.sendMessage(chatID, 'Someone is at your door! \n Reply yes or no \n View Stream @ http://raspberrypi3.local/html/index.php')
     bot.sendPhoto(chatID, open('/home/pi/DoorbellImages/%s.jpg' %label,'rb'), caption = label)
     MessageLoop(bot, handle).run_as_thread(timeout=10)
     sleep(10)
-
-    '''updates = bot.get_updates()
-
-    messages = [u.message.text for u in updates]
-    print messages[-1]
-
-
-    if messages[-1] == 'yes':
-        print ('True')
-        return True
-
-    else:
-        print ('False')
-        return False'''
 
     decision = getID()
 
@@ -103,6 +98,8 @@ def SendAlert():
 
     elif decision == False:
         bot.sendMessage(chatID, 'Declining Entry')
+
+    GPIO.output(2, GPIO.LOW)
 
     return decision
 
