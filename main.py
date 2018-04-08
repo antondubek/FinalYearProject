@@ -99,8 +99,15 @@ class RFIDScreen(Screen):
     def Decision(self, *args):
         # Runs keypad code check from subclass returning T/F
         checkTag = checkRFIDTag()
+
+        if isinstance(checkTag, str):
+            Clock.schedule_once(partial(self.DoorOpenString, checkTag)) # DoorOpen Sequence
+            Clock.schedule_once(DoorControl.DoorClosed, 10) # Door Closed Sequence
+            Clock.schedule_once(DoorControl.KillApp, 15) # Back to initial Menu
+            return
+
         # True Output sees text, background and LED used as an inidicator.
-        if checkTag == True:
+        elif checkTag == True:
             Clock.schedule_once(DoorControl.DoorOpen) # DoorOpen Sequence
             Clock.schedule_once(DoorControl.DoorClosed, 10) # Door Closed Sequence
             Clock.schedule_once(DoorControl.KillApp, 15) # Back to initial Menu
@@ -122,6 +129,13 @@ class RFIDScreen(Screen):
         self.the_text.text = "Please present card to keypad"
         self.green = 0
         self.red = 0
+
+    # Sets Screen green and says welcome and the name of the person
+    def DoorOpenString(self, name, *args):
+        print ("DEBUG: Door open name = %s" %name)
+        self.the_text.text = "Welcome %s" %(name)
+        self.green = 1
+        LEDS("GREEN")
 
 # Keypad Screen checks user keypad input for authentication
 class KeypadScreen(Screen):
@@ -250,7 +264,7 @@ class DoorControl(Screen):
 
     # Sets on screen text as door closed with a red background and LEDS
     def DoorClosed(self, *args):
-        print ("Door Closed : Please Enter")
+        print ("Door Closed")
         MyScreenManager.current_screen.the_text.text = "Door Closed"
         MyScreenManager.current_screen.green = 0
         MyScreenManager.current_screen.red = 1
