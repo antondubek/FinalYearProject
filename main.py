@@ -16,7 +16,6 @@ import sys
 # Subclass Functions
 from Subclasses.Keypad import digit
 from Subclasses.RFID import checkRFIDTag
-from Subclasses.Images import takePicture
 from Subclasses.Alert import SendAlert
 from Subclasses.faceRecognition.box import checkFace
 
