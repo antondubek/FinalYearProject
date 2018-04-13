@@ -289,7 +289,7 @@ MyScreenManager.add_widget(AlertSomeoneScreen(name='Alert'))
 MyScreenManager.add_widget(FacialRecognitionScreen(name='FaceRecog'))
 
 # Building the kivy app and loading the ScreenManager
-class introduction(App):
+class menu(App):
     def build(self):
         return MyScreenManager
 
@@ -356,4 +356,4 @@ while True:
 
     # Waits for piezo switch to be grounded and triggers APP
     if GPIO.wait_for_edge(23, GPIO.FALLING):
-        introduction().run()
+        menu().run()
