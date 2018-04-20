@@ -1,6 +1,8 @@
 '''
+Author: rpihacks
+Github: https://github.com/spotrh/rpihacks/blob/master/matrix_keypad-1.0.4-fixed/build/lib/matrix_keypad/matrix_keypad_RPi_GPIO.py
 Note: This file is a supporting library file for the 4 column membrane keypad
-The file is derived from [insert github link] and has been modified for this application.
+The file is derived from link above and has been modified for this application.
 File: Keypad Library
 '''
 
@@ -32,6 +34,7 @@ class keypad():
         for j in range(len(self.COLUMN)):
             GPIO.setup(self.COLUMN[j], GPIO.OUT)
             GPIO.output(self.COLUMN[j], GPIO.LOW)
+
 
         # Set all rows as input
         for i in range(len(self.ROW)):

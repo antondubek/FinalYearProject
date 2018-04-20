@@ -1,4 +1,5 @@
-"""Raspberry Pi Face Recognition Treasure Box
+"""
+Raspberry Pi Face Recognition Treasure Box
 Treasure Box Script
 Copyright 2013 Tony DiCola
 """
@@ -11,23 +12,22 @@ import RPi.GPIO as GPIO
 
 
 def checkFace():
+	# Turn Flash ON
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setwarnings(False)
 	GPIO.setup(2,GPIO.OUT)
 	GPIO.output(2,GPIO.HIGH)
 	output = False
-	# Load training data into model
-	print 'Loading training data...'
+	# Load training data
+	print 'DEBUG: Loading training data...'
 	model = cv2.createEigenFaceRecognizer()
 	model.load(config.TRAINING_FILE)
-	print 'Training data loaded!'
-	# Initialize camer and box.
+	print 'DEBUG: Training data loaded!'
+	# Initialize camera and box.
 	camera = config.get_camera()
-	print 'Running box...'
-	print 'Press button to lock (if unlocked), or unlock if the correct face is detected.'
-	print 'Press Ctrl-C to quit.'
+	print 'DEBUG: Running recognition sequence'
 	for i in range(10):
-		print 'Button pressed, looking for face...'
+		print 'DEBUG: Looking for face... Attempt %s /10' %i
 		# Check for the positive face and unlock if found.
 		image = camera.read()
 		# Convert image to grayscale.
@@ -47,10 +47,10 @@ def checkFace():
 			'POSITIVE' if label == config.POSITIVE_LABEL else 'NEGATIVE',
 			confidence)
 		if label == config.POSITIVE_LABEL and confidence < config.POSITIVE_THRESHOLD:
-			print 'Recognized face!'
+			print 'DEBUG: Face recognised - Returning True'
 			output = True
 			break
 		else:
-			print 'Did not recognize face!'
+			print 'DEBUG: Face not recognised'
 	GPIO.output(2,GPIO.LOW)
 	return output

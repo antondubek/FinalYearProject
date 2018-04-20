@@ -13,6 +13,10 @@ import cv2
 
 import config
 import face
+import RPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(2,GPIO.OUT)
 
 
 # Prefix for positive training image filenames.
@@ -45,8 +49,10 @@ if __name__ == '__main__':
 	print 'Press button or type c (and press enter) to capture an image.'
 	print 'Press Ctrl-C to quit.'
 	while True:
+
 		# Check if button was pressed or 'c' was received, then capture image.
 		if is_letter_input('c'):
+			GPIO.output(2, GPIO.HIGH)
 			print 'Capturing image...'
 			image = camera.read()
 			# Convert image to grayscale.
@@ -66,3 +72,4 @@ if __name__ == '__main__':
 			cv2.imwrite(filename, crop)
 			print 'Found face and wrote training image', filename
 			count += 1
+			GPIO.output(2, GPIO.LOW)

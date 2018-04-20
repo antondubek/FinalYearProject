@@ -29,8 +29,8 @@ chatID = 489826446
 rdr = RFID()
 
 # Accepted Card Lists
-residentCards = {"229,49,219,209" : "Anthony", "1" : "Mark"}
-cleanerCards = ["96,111,87,25"]
+residentCards = {"176,181,23,164" : "Anthony", "229,49,219,209" : "Mark"}
+cleanerCards = ["23,228,142,169"]
 
 ####
 ## Functions
@@ -82,7 +82,7 @@ def checkRFIDTag():
     elif cardID in cleanerCards:
 
         # If the dayOfWeek is Mon-Sun(0-6) hour is between 24HR hours
-        if dayOfWeek == 6 and hour < 15 and hour > 12:
+        if dayOfWeek == 0 and hour < 17 and hour > 12:
             print ("DEBUG: Cleaner")
             GPIO.output(2, GPIO.HIGH)
             label = takePicture()
@@ -92,10 +92,11 @@ def checkRFIDTag():
             return True
 
         else:
-            print ("DEBUG: Cleaner False")
+            print ("DEBUG: Cleaner Out of Hours")
             return False
 
     # Returns False for unknown cards
     else:
         print ("DEBUG: Unrecognised Card False")
+        print ("DEBUG: RFID Card ID = %s" %cardID)
         return False
