@@ -200,6 +200,13 @@ class AlertSomeoneScreen(Screen):
             Clock.schedule_once(self.stopLiveStream, 35)
             Clock.schedule_once(DoorControl.KillApp, 35) # Back to initial Menu
 
+        elif isinstance(decision, str):
+            Clock.schedule_once(partial(self.RejectString, decision)) # DoorOpen Sequence
+            #Clock.schedule_once(DoorControl.DoorClosed, 30) # Door Closed Sequence
+            Clock.schedule_once(self.stopLiveStream, 35)
+            Clock.schedule_once(DoorControl.KillApp, 35) # Back to initial Menu
+            return
+
         else:
             Clock.schedule_once(self.entryDeclined)
             Clock.schedule_once(self.stopLiveStream, 30)
@@ -220,6 +227,13 @@ class AlertSomeoneScreen(Screen):
         self.the_text.text = "Please Look at the Camera \n Wait for Response"
         self.green = 0
         self.red = 0
+
+    # Sets Screen green and says welcome and the name of the person
+    def RejectString(self, message, *args):
+        print ("DEBUG: Message = %s" %message)
+        self.the_text.text = "%s" %(message)
+        self.red = 1
+        LEDS("RED")
 
 
 # Runs facial recognition program for authentication
@@ -313,7 +327,7 @@ def LEDS(status):
         GPIO.output(ButtonRedLED_pin,GPIO.HIGH)
         GPIO.output(ButtonGreenLED_pin,GPIO.LOW)
         GPIO.output(ButtonBlueLED_pin, GPIO.HIGH)
-        #GPIO.output(Buzzer_pin, GPIO.HIGH)
+        GPIO.output(Buzzer_pin, GPIO.HIGH)
     elif status == "RED":
         GPIO.output(GreenLED_pin,GPIO.LOW)
         GPIO.output(RedLED_pin, GPIO.HIGH)
@@ -321,7 +335,7 @@ def LEDS(status):
         GPIO.output(ButtonRedLED_pin,GPIO.LOW)
         GPIO.output(ButtonGreenLED_pin,GPIO.HIGH)
         GPIO.output(ButtonBlueLED_pin, GPIO.HIGH)
-        #GPIO.output(Buzzer_pin, GPIO.LOW)
+        GPIO.output(Buzzer_pin, GPIO.LOW)
     elif status == "BLUE":
         GPIO.output(GreenLED_pin,GPIO.LOW)
         GPIO.output(RedLED_pin, GPIO.LOW)
@@ -329,7 +343,7 @@ def LEDS(status):
         GPIO.output(ButtonRedLED_pin,GPIO.HIGH)
         GPIO.output(ButtonGreenLED_pin,GPIO.HIGH)
         GPIO.output(ButtonBlueLED_pin, GPIO.LOW)
-        #GPIO.output(Buzzer_pin, GPIO.LOW)
+        GPIO.output(Buzzer_pin, GPIO.LOW)
 
     # Debug if LED function passed invalid arguments
     else:

@@ -82,7 +82,7 @@ def checkRFIDTag():
     elif cardID in cleanerCards:
 
         # If the dayOfWeek is Mon-Sun(0-6) hour is between 24HR hours
-        if dayOfWeek == 0 and hour < 17 and hour > 12:
+        if dayOfWeek == 4 and hour < 18 and hour > 0:
             print ("DEBUG: Cleaner")
             GPIO.output(2, GPIO.HIGH)
             label = takePicture()

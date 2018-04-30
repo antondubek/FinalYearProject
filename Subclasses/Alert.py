@@ -23,7 +23,7 @@ bot = telepot.Bot(token='471263091:AAEFiEIp0Sd_ud0I0G7ARHzIsTE56TMmm2Y')
 chatID = 489826446
 
 # Sets ID to default to False if no reply is received
-id = False
+id = 2
 
 ####
 ## Functions
@@ -57,6 +57,7 @@ def stopLiveStream():
 # Sets ID True/False based on response which is relayed to Main
 def handle(msg):
     global id
+    global command
 
     command = msg['text']
 
@@ -64,16 +65,17 @@ def handle(msg):
 
     if command.lower() == 'yes':
         bot.sendMessage(chatID, 'Yes Selected')
-        id = True
+        id = 1
         return
 
     elif command.lower() == 'no':
         bot.sendMessage(chatID, 'No Selected')
-        id = False
+        id = 2
         return
 
     else:
-        bot.sendMessage(chatID, 'Sorry that command is not recognised please reply "yes" or "no"')
+        bot.sendMessage(chatID, 'Message Selected')
+        id = 3
         return
 
 def getID():
@@ -85,22 +87,31 @@ def SendAlert():
     GPIO.output(2, GPIO.HIGH)
     label = takePicture()
     startLiveStream()
-    bot.sendMessage(chatID, 'Someone is at your door! \n Reply yes or no \n View Stream @ http://raspberrypi3.local/html/index.php')
+    bot.sendMessage(chatID, 'Someone is at your door! \n Reply yes or no for entry or with a message \n View Stream @ http://raspberrypi3.local/html/index.php')
     bot.sendPhoto(chatID, open('/home/pi/DoorbellImages/%s.jpg' %label,'rb'), caption = label)
     MessageLoop(bot, handle).run_as_thread(timeout=10)
     sleep(10)
 
     decision = getID()
 
-    if decision == True:
+    if decision == 1:
         bot.sendMessage(chatID, 'Allowing Entry')
+        GPIO.output(2, GPIO.LOW)
+        return True
 
-    elif decision == False:
+    elif decision == 2:
         bot.sendMessage(chatID, 'Declining Entry')
+        GPIO.output(2, GPIO.LOW)
+        return False
 
-    GPIO.output(2, GPIO.LOW)
+    elif decision == 3:
+        bot.sendMessage(chatID, 'Message Sent')
+        GPIO.output(2, GPIO.LOW)
+        print str(command)
+        return str(command)
 
-    return decision
+
+
 
 ####
 ## Main
